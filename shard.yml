@@ -1,0 +1,13 @@
+name: tote
+version: 0.1.0
+
+authors:
+  - Will Lewis <>
+
+targets:
+  tote:
+    main: src/tote.cr
+
+crystal: 0.21.1
+
+license: MIT
