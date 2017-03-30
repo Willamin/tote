@@ -7,6 +7,8 @@ authors:
 targets:
   tote:
     main: src/tote.cr
+  totes:
+    main: src/totes.cr
 
 crystal: 0.21.1
 
