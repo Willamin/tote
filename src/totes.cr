@@ -13,11 +13,9 @@ module Totes
       server = TCPServer.new(@host, @port)
       loop do
         server.accept do |client|
-          loop do
-            message = client.gets
-            if message
-              puts "Received: #{message}"
-            end
+          message = client.gets
+          if message
+            puts "Received: #{message}"
           end
         end
       end

@@ -7,9 +7,8 @@ module Tote
 
     @host = "localhost"
     @port = 1234
-    @client = nil
 
-    def run
+    def setup
       OptionParser.parse! do |parser|
         parser.banner = "Usage: tote [arguments] [file]"
         parser.on("-v", "--version", "Show the version number") {
@@ -23,19 +22,22 @@ module Tote
           "-h HOST", "--host HOST", "Host for using an alternate tote server"
         ) { |arg| @host = arg }
       end
+    end
 
+    def run
       puts "Connecting to #{@host} on port #{@port}"
-      @client = TCPSocket.new(@host, @port)
+      send_message "hello world!\n"
+    end
 
-      @client.try do |client|
-        message = "hello world!"
-        puts "Sending: #{message}"
-        client << message
-        client.close
-      end
+    def send_message(message)
+      client = TCPSocket.new(@host, @port)
+      puts "Sending: #{message}"
+      client << message
+      client.close
     end
   end
 end
 
 tote = Tote::Client.new
+tote.setup()
 tote.run()
