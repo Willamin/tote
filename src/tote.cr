@@ -26,7 +26,10 @@ module Tote
 
     def run
       puts "Connecting to #{@host} on port #{@port}"
-      send_message "hello world!\n"
+      loop do
+        send_message "hello world! current time is #{Time.now.epoch_ms}\n"
+        sleep 0.5
+      end
     end
 
     def send_message(message)
