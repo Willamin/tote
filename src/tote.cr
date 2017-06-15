@@ -30,14 +30,16 @@ module Tote
         byte = STDIN.raw &.read_char
         if byte == '\u{3}'
           break
+        elsif byte == '\u{7f}'
+          send_message("^H")
+        else
+          send_message(byte)
         end
-        send_message(byte)
       end
     end
 
     def send_message(message)
       client = TCPSocket.new(@host, @port)
-      puts "Sending: #{message}"
       client << message
       client.close
     end

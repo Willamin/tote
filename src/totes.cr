@@ -6,6 +6,7 @@ module Totes
 
     @host = "localhost"
     @port = 1234
+    @buffer = ""
 
     def run
       puts "Listening at #{@host} on port #{@port}"
@@ -15,7 +16,12 @@ module Totes
         server.accept do |client|
           message = client.gets
           if message
-            puts "Received: #{message}"
+            if message == "^H"
+              @buffer = @buffer.rchop
+            else
+              @buffer = @buffer + message
+            end
+            puts "Buffer: #{@buffer}"
           end
         end
       end
