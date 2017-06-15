@@ -27,8 +27,11 @@ module Tote
     def run
       puts "Connecting to #{@host} on port #{@port}"
       loop do
-        send_message "hello world! current time is #{Time.now.epoch_ms}\n"
-        sleep 0.5
+        byte = STDIN.raw &.read_char
+        if byte == '\u{3}'
+          break
+        end
+        send_message(byte)
       end
     end
 
