@@ -23,16 +23,24 @@ module Totes
 
       case message
       when "request-buffer"
+        output(message)
         client.puts @buffer
       when "delete"
+        output(message)
         @buffer = @buffer.rchop
       when "delete-word"
+        output(message)
         @buffer, _, _ = @buffer.rpartition(/\W\w*?/)
       else
+        output("typed #{message}")
         @buffer = @buffer + message
       end
 
-      puts "Buffer: #{@buffer}"
+      # puts "  buffer: #{@buffer}"
+    end
+
+    def output(command)
+      puts "received command at #{Time.now.epoch}: #{command}"
     end
   end
 end
