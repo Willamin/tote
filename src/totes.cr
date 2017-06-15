@@ -16,8 +16,11 @@ module Totes
         server.accept do |client|
           message = client.gets
           if message
-            if message == "^H"
+            case message
+            when "delete"
               @buffer = @buffer.rchop
+            when "delete-word"
+              @buffer, _, _ = @buffer.rpartition(/\W\w*?/)
             else
               @buffer = @buffer + message
             end

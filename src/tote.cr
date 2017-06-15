@@ -5,6 +5,10 @@ require "socket"
 module Tote
   class Client
 
+    CTRLC = '\u{3}'
+    CTRLW = '\u{17}'
+    BACKSPACE = '\u{7f}'
+
     @host = "localhost"
     @port = 1234
 
@@ -28,10 +32,14 @@ module Tote
       puts "Connecting to #{@host} on port #{@port}"
       loop do
         byte = STDIN.raw &.read_char
-        if byte == '\u{3}'
+        puts byte.inspect
+        case byte
+        when CTRLC
           break
-        elsif byte == '\u{7f}'
-          send_message("^H")
+        when BACKSPACE
+          send_message("delete")
+        when CTRLW
+          send_message("delete-word")
         else
           send_message(byte)
         end
