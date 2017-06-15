@@ -32,7 +32,6 @@ module Tote
       puts "Connecting to #{@host} on port #{@port}"
       loop do
         byte = STDIN.raw &.read_char
-        puts byte.inspect
         case byte
         when CTRLC
           break
@@ -43,13 +42,18 @@ module Tote
         else
           send_message(byte)
         end
+
+        buffer = send_message("request-buffer")
+        puts buffer
       end
     end
 
     def send_message(message)
       client = TCPSocket.new(@host, @port)
-      client << message
+      client.puts message
+      output = client.gets
       client.close
+      output
     end
   end
 end

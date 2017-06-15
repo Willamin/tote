@@ -17,6 +17,8 @@ module Totes
           message = client.gets
           if message
             case message
+            when "request-buffer"
+              client.puts @buffer
             when "delete"
               @buffer = @buffer.rchop
             when "delete-word"
