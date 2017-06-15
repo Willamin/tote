@@ -4,9 +4,8 @@ require "socket"
 
 module Tote
   class Client
-
-    CTRLC = '\u{3}'
-    CTRLW = '\u{17}'
+    CTRLC     = '\u{3}'
+    CTRLW     = '\u{17}'
     BACKSPACE = '\u{7f}'
 
     @host = "localhost"
@@ -20,11 +19,9 @@ module Tote
         }
         parser.on("-h", "--help", "Show this help message") { puts parser }
         parser.on(
-          "-p PORT", "--port PORT", "Port for using an alternate tote server"
-        ) { |arg| @port = arg.to_i32 }
+          "-p PORT", "--port PORT", "Port for using an alternate tote server") { |arg| @port = arg.to_i32 }
         parser.on(
-          "-h HOST", "--host HOST", "Host for using an alternate tote server"
-        ) { |arg| @host = arg }
+          "-h HOST", "--host HOST", "Host for using an alternate tote server") { |arg| @host = arg }
       end
     end
 
@@ -59,5 +56,5 @@ module Tote
 end
 
 tote = Tote::Client.new
-tote.setup()
-tote.run()
+tote.setup
+tote.run
