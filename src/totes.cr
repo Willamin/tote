@@ -31,6 +31,8 @@ module Totes
       when "delete-word"
         output(message)
         @buffer, _, _ = @buffer.rpartition(/\W\w*?/)
+      when "new-line"
+        @buffer = @buffer + "\n"
       else
         output("typed #{message}")
         @buffer = @buffer + message

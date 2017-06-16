@@ -7,6 +7,7 @@ module Tote
     CTRLC     = '\u{3}'
     CTRLW     = '\u{17}'
     BACKSPACE = '\u{7f}'
+    NEWLINE = '\r'
 
     @host = "localhost"
     @port = 1234
@@ -36,6 +37,8 @@ module Tote
           send_message("delete")
         when CTRLW
           send_message("delete-word")
+        when NEWLINE
+          send_message("new-line")
         else
           send_message(byte)
         end
@@ -48,7 +51,7 @@ module Tote
     def send_message(message)
       client = TCPSocket.new(@host, @port)
       client.puts message
-      output = client.gets
+      output = client.gets_to_end
       client.close
       output
     end
