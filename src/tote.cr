@@ -7,7 +7,7 @@ module Tote
     CTRLC     = '\u{3}'
     CTRLW     = '\u{17}'
     BACKSPACE = '\u{7f}'
-    NEWLINE = '\r'
+    RETURN = '\r'
 
     @host = "localhost"
     @port = 1234
@@ -37,7 +37,7 @@ module Tote
           send_message("delete")
         when CTRLW
           send_message("delete-word")
-        when NEWLINE
+        when RETURN
           send_message("new-line")
         else
           send_message(byte)
