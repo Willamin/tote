@@ -9,8 +9,13 @@ module Tote
     BACKSPACE = '\u{7f}'
     RETURN = '\r'
 
+    CLEARSCREEN = "\u001b[2J"
+    CLEARLINE  = "\u001b[2K"
+    CURSORHOME  = "\u001b[H"
+
     @host = "localhost"
     @port = 1234
+    @buffer = ""
 
     def setup
       OptionParser.parse! do |parser|
@@ -28,6 +33,8 @@ module Tote
 
     def run
       puts "Connecting to #{@host} on port #{@port}"
+      @buffer = send_message("request-buffer")
+      redraw
       loop do
         byte = STDIN.raw &.read_char
         case byte
@@ -43,8 +50,8 @@ module Tote
           send_message(byte)
         end
 
-        buffer = send_message("request-buffer")
-        puts buffer
+        @buffer = send_message("request-buffer")
+        redraw
       end
     end
 
@@ -54,6 +61,16 @@ module Tote
       output = client.gets_to_end
       client.close
       output
+    end
+
+    def clear()
+      print CLEARSCREEN
+      print CURSORHOME
+    end
+
+    def redraw()
+      clear
+      puts @buffer
     end
   end
 end
