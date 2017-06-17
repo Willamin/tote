@@ -13,6 +13,11 @@ module Tote
     CLEARLINE  = "\u001b[2K"
     CURSORHOME  = "\u001b[H"
 
+    UP    = "\u001b[A"
+    DOWN  = "\u001b[B"
+    LEFT  = "\u001b[C"
+    RIGHT = "\u001b[D"
+
     @host = "localhost"
     @port = 1234
     @buffer = ""
