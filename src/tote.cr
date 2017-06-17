@@ -4,19 +4,21 @@ require "socket"
 
 module Tote
   class Client
+    ESC = '\u001b'
+
     CTRLC     = '\u{3}'
     CTRLW     = '\u{17}'
     BACKSPACE = '\u{7f}'
     RETURN = '\r'
 
-    CLEARSCREEN = "\u001b[2J"
-    CLEARLINE  = "\u001b[2K"
-    CURSORHOME  = "\u001b[H"
+    CLEARSCREEN = "#{ESC}[2J"
+    CLEARLINE  = "#{ESC}[2K"
+    CURSORHOME  = "#{ESC}[H"
 
-    UP    = "\u001b[A"
-    DOWN  = "\u001b[B"
-    LEFT  = "\u001b[C"
-    RIGHT = "\u001b[D"
+    UP    = "#{ESC}[A"
+    DOWN  = "#{ESC}[B"
+    LEFT  = "#{ESC}[C"
+    RIGHT = "#{ESC}[D"
 
     @host = "localhost"
     @port = 1234
