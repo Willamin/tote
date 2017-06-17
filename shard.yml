@@ -6,9 +6,9 @@ authors:
 
 targets:
   tote:
-    main: src/tote.cr
-  totes:
-    main: src/totes.cr
+    main: src/client.cr
+  tote-server:
+    main: src/server.cr
 
 crystal: 0.21.1
 

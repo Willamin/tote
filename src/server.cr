@@ -1,7 +1,7 @@
-require "./totes/*"
+require "./tote/*"
 require "socket"
 
-module Totes
+module Tote
   class Server
     @host = "localhost"
     @port = 1234
@@ -47,5 +47,5 @@ module Totes
   end
 end
 
-tote_server = Totes::Server.new
+tote_server = Tote::Server.new
 tote_server.run

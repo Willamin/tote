@@ -28,7 +28,7 @@ module Tote
       OptionParser.parse! do |parser|
         parser.banner = "Usage: tote [arguments] [file]"
         parser.on("-v", "--version", "Show the version number") {
-          puts Tote::VERSION
+          puts Tote::Client::VERSION
         }
         parser.on("-h", "--help", "Show this help message") { puts parser }
         parser.on(
