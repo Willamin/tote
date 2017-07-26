@@ -1,6 +1,8 @@
 require "./tote/*"
 require "option_parser"
 require "socket"
+require "termbox"
+include Termbox
 
 module Tote
   class Client
