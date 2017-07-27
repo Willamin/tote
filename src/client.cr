@@ -6,14 +6,23 @@ include Termbox
 
 module Tote
   class Client
-    @host = "localhost"
-    @port = 1234
-    @buffer = [] of String
-    @window = Window.new
+    @host : String
+    @port : Int32
+    @buffer : Array(String)
+    @window : Window
+    @status : String
 
-    def setup
+    def initialize
+      @buffer = [] of String
+      @status = ""
+      @port = 1234
+      @host = "localhost"
+      @window = Window.new
       @window.set_output_mode(OUTPUT_256)
       @window.set_primary_colors(8, 0)
+    end
+
+    def parse_args
       OptionParser.parse! do |parser|
         parser.banner = "Usage: tote [arguments] [file]"
         parser.on("-v", "--version", "Show the version number") {
@@ -27,33 +36,48 @@ module Tote
       end
     end
 
+    def handle_key(key, ch)
+      case key
+      when Termbox::KEY_BACKSPACE, Termbox::KEY_BACKSPACE2
+        send_message("delete")
+      when Termbox::KEY_CTRL_W
+        send_message("delete-word")
+      when Termbox::KEY_ENTER
+        send_message("new-line")
+      when Termbox::KEY_SPACE
+        send_message(" ")
+      else
+        unless ch == 0
+          send_message(ch.chr.to_s)
+        end
+      end
+    end
 
-    def run
+    def update_buffer
+      received_buffer = send_message("request-buffer")
+      @status = "#{received_buffer.size}"
+      @buffer = received_buffer.split("\n")
+    end
+
+    def main_loop
       puts "Connecting to #{@host} on port #{@port}"
       loop do
-        @buffer = send_message("request-buffer").split("\n")
+        update_buffer
         redraw
         event = @window.peek(1000)
         if event.type == Termbox::EVENT_KEY
           case event.key
           when Termbox::KEY_CTRL_C
             break
-          when Termbox::KEY_BACKSPACE, Termbox::KEY_BACKSPACE2
-            send_message("delete")
-          when Termbox::KEY_CTRL_W
-            send_message("delete-word")
-          when Termbox::KEY_ENTER
-            send_message("new-line")
-          when Termbox::KEY_SPACE
-            send_message(" ")
           else
-            unless event.ch == 0
-              send_message(event.ch.chr.to_s)
-            end
+            handle_key(event.key, event.ch)
           end
         end
       end
       @window.shutdown
+    rescue e
+      @window.shutdown
+      STDERR.puts e
     end
 
     def send_message(message)
@@ -74,17 +98,16 @@ module Tote
 
       @window.write_string(
         Position.new(1, @window.height - 2),
-        "#{@buffer[0].size}, #{@buffer.size}")
+        "#{@status}")
 
       @window.cursor(
         Position.new(
-          1 + @buffer[-2].size,
-          1 + @buffer.size - 2))
+          1 + @buffer[-1].size,
+          1 + @buffer.size - 1))
       @window.render()
     end
   end
 end
 
 tote = Tote::Client.new
-tote.setup
-tote.run
+tote.main_loop

@@ -24,7 +24,7 @@ module Tote
       case message
       when "request-buffer"
         output(message)
-        client.puts @buffer
+        client.print @buffer
       when "delete"
         output(message)
         @buffer = @buffer.rchop
