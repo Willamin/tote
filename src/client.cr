@@ -33,7 +33,7 @@ module Tote
       loop do
         @buffer = send_message("request-buffer").split("\n")
         redraw
-        event = @window.poll
+        event = @window.peek(1000)
         if event.type == Termbox::EVENT_KEY
           case event.key
           when Termbox::KEY_CTRL_C
@@ -47,7 +47,9 @@ module Tote
           when Termbox::KEY_SPACE
             send_message(" ")
           else
-            send_message(event.ch.chr.to_s)
+            unless event.ch == 0
+              send_message(event.ch.chr.to_s)
+            end
           end
         end
       end
