@@ -6,27 +6,14 @@ include Termbox
 
 module Tote
   class Client
-    ESC = '\u001b'
-
-    CTRLC     = '\u{3}'
-    CTRLW     = '\u{17}'
-    BACKSPACE = '\u{7f}'
-    RETURN = '\r'
-
-    CLEARSCREEN = "#{ESC}[2J"
-    CLEARLINE  = "#{ESC}[2K"
-    CURSORHOME  = "#{ESC}[H"
-
-    UP    = "#{ESC}[A"
-    DOWN  = "#{ESC}[B"
-    LEFT  = "#{ESC}[C"
-    RIGHT = "#{ESC}[D"
-
     @host = "localhost"
     @port = 1234
-    @buffer = ""
+    @buffer = [] of String
+    @window = Window.new
 
     def setup
+      @window.set_output_mode(OUTPUT_256)
+      @window.set_primary_colors(8, 0)
       OptionParser.parse! do |parser|
         parser.banner = "Usage: tote [arguments] [file]"
         parser.on("-v", "--version", "Show the version number") {
@@ -40,28 +27,31 @@ module Tote
       end
     end
 
+
     def run
       puts "Connecting to #{@host} on port #{@port}"
-      @buffer = send_message("request-buffer")
-      redraw
       loop do
-        byte = STDIN.raw &.read_char
-        case byte
-        when CTRLC
-          break
-        when BACKSPACE
-          send_message("delete")
-        when CTRLW
-          send_message("delete-word")
-        when RETURN
-          send_message("new-line")
-        else
-          send_message(byte)
-        end
-
-        @buffer = send_message("request-buffer")
+        @buffer = send_message("request-buffer").split("\n")
         redraw
+        event = @window.poll
+        if event.type == Termbox::EVENT_KEY
+          case event.key
+          when Termbox::KEY_CTRL_C
+            break
+          when Termbox::KEY_BACKSPACE, Termbox::KEY_BACKSPACE2
+            send_message("delete")
+          when Termbox::KEY_CTRL_W
+            send_message("delete-word")
+          when Termbox::KEY_ENTER
+            send_message("new-line")
+          when Termbox::KEY_SPACE
+            send_message(" ")
+          else
+            send_message(event.ch.chr.to_s)
+          end
+        end
       end
+      @window.shutdown
     end
 
     def send_message(message)
@@ -72,14 +62,23 @@ module Tote
       output
     end
 
-    def clear()
-      print CLEARSCREEN
-      print CURSORHOME
-    end
-
     def redraw()
-      clear
-      puts @buffer
+      @window.clear()
+      @window << Border.new(@window, "normal")
+
+      @buffer.each_with_index do |line, i|
+        @window.write_string(Position.new(1, 1 + i), line)
+      end
+
+      @window.write_string(
+        Position.new(1, @window.height - 2),
+        "#{@buffer[0].size}, #{@buffer.size}")
+
+      @window.cursor(
+        Position.new(
+          1 + @buffer[-2].size,
+          1 + @buffer.size - 2))
+      @window.render()
     end
   end
 end

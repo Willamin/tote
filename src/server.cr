@@ -38,7 +38,7 @@ module Tote
         @buffer = @buffer + message
       end
 
-      # puts "  buffer: #{@buffer}"
+      puts "  buffer: #{@buffer}"
     end
 
     def output(command)
