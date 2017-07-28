@@ -6,8 +6,14 @@ authors:
 
 targets:
   tote:
-    main: src/tote.cr
+    main: src/client.cr
+  tote-server:
+    main: src/server.cr
 
 crystal: 0.21.1
 
 license: MIT
+
+dependencies:
+  termbox:
+    github: andrewsuzuki/termbox-crystal
