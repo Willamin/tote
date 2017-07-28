@@ -88,8 +88,8 @@ module Tote
       output
     end
 
-    def redraw()
-      @window.clear()
+    def redraw
+      @window.clear
       @window << Border.new(@window, "normal")
 
       @buffer.each_with_index do |line, i|
@@ -104,7 +104,7 @@ module Tote
         Position.new(
           1 + @buffer[-1].size,
           1 + @buffer.size - 1))
-      @window.render()
+      @window.render
     end
   end
 end
