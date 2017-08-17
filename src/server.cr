@@ -7,7 +7,7 @@ module Tote
     @port = 1234
     @buffer = ""
 
-    def run
+    def main_loop
       puts "Listening at #{@host} on port #{@port}"
 
       server = TCPServer.new(@host, @port)
@@ -20,6 +20,7 @@ module Tote
       message = client.gets
 
       return unless message
+
 
       case message
       when "request-buffer"
@@ -34,11 +35,19 @@ module Tote
       when "new-line"
         @buffer = @buffer + "\n"
       else
-        output("typed #{message}")
-        @buffer = @buffer + message
+        split = message.split(":")
+        if split.size > 0
+          if split[0] == "char"
+            if split.size > 1
+              @buffer = @buffer + split[1]
+            end
+          end
+        else
+          output("something else maybe")
+        end
       end
 
-      # puts "  buffer: #{@buffer}"
+      puts "  buffer: #{@buffer}"
     end
 
     def output(command)
@@ -47,5 +56,5 @@ module Tote
   end
 end
 
-tote_server = Tote::Server.new
-tote_server.run
+tote = Tote::Server.new
+tote.main_loop
