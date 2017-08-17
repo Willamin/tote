@@ -67,33 +67,47 @@ module Tote
       @buffer = received_buffer.split("\n")
     end
 
-    def update_status
-      @status << "size:#{@buffer.join("\n").size}"
-      @status << "cur:{#{@cursor.x},#{@cursor.y}}"
+    def status_maker(label)
+      "#{label}:" + yield.to_s
+    end
 
-      if @buffer.size > @cursor.y
-        current_line_size = @buffer[@cursor.y].size
+    def update_status
+      @status << status_maker("size") do
+        @buffer.join("\n").size
       end
-      @status << "b[y]#:#{current_line_size}"
+
+      @status << status_maker("cur") do
+        "[#{@cursor.x},#{@cursor.y}]"
+      end
+
+      @status << status_maker("line-length") do
+        @buffer[@cursor.y].size
+      end
     end
 
     def redraw
       @window.clear
       @window << Border.new(@window, "normal")
 
+      @window.set_primary_colors(8, 0)
       @buffer.each_with_index do |line, i|
         @window.write_string(Position.new(1, 1 + i), line)
       end
 
+      @window.set_primary_colors(1, 0)
       @window.write_string(
         Position.new(1, @window.height - 2),
         "#{@status.join(" ")}")
 
+
+      @window.set_primary_colors(8, 0)
       @cursor.limit(@buffer)
       @window.cursor(
         Position.new(
           1 + @cursor.x,
           1 + @cursor.y))
+
+      @window.set_primary_colors(4, 0)
       @window.render
     end
 
@@ -103,26 +117,16 @@ module Tote
         move_cursor(key)
         return
       when Termbox::KEY_BACKSPACE, Termbox::KEY_BACKSPACE2
-        send_message("delete")
-        update_buffer
-        @cursor.eof(@buffer)
+        send_message_and_update("delete")
       when Termbox::KEY_CTRL_W
-        send_message("delete-word")
-        update_buffer
-        @cursor.eof(@buffer)
+        send_message_and_update("delete-word")
       when Termbox::KEY_ENTER
-        send_message("new-line")
-        update_buffer
-        @cursor.eof(@buffer)
+        send_message_and_update("new-line")
       when Termbox::KEY_SPACE
-        send_message("char:•")
-        update_buffer
-        @cursor.eof(@buffer)
+        send_message_and_update("char: ")
       else
         unless ch == 0
-          send_message("char:" + ch.chr.to_s)
-          update_buffer
-          @cursor.eof(@buffer)
+          send_message_and_update("char:" + ch.chr.to_s)
         end
       end
     end
@@ -139,6 +143,12 @@ module Tote
         @cursor.right
       end
       @cursor.limit(@buffer)
+    end
+
+    def send_message_and_update(message)
+      send_message(message)
+      update_buffer
+      @cursor.eof(@buffer)
     end
 
     def send_message(message)
