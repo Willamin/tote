@@ -18,9 +18,7 @@ module Tote
 
     def on_connect(client)
       message = client.gets
-
       return unless message
-
 
       case message
       when "request-buffer"
@@ -46,8 +44,6 @@ module Tote
           output("something else maybe")
         end
       end
-
-      puts "  buffer: #{@buffer}"
     end
 
     def output(command)

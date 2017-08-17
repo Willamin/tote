@@ -10,13 +10,13 @@ module Tote
     @port : Int32
     @buffer : Array(String)
     @window : Window
-    @status : String
+    @status : Array(String)
     @cursor : Cursor
 
     def initialize
       @cursor = Cursor.new(0, 0)
       @buffer = [] of String
-      @status = ""
+      @status = [] of String
       @port = 1234
       @host = "localhost"
       @window = Window.new
@@ -41,7 +41,7 @@ module Tote
     def main_loop
       puts "Connecting to #{@host} on port #{@port}"
       loop do
-        @status = ""
+        @status = [] of String
         update_buffer
         update_status
         redraw
@@ -68,25 +68,13 @@ module Tote
     end
 
     def update_status
-      @status += "size:#{@buffer.join("\n").size} "
-      @status += "cur:{#{@cursor.x},#{@cursor.y}} "
-      if @buffer.size > @cursor.y
-        current_line = @buffer[@cursor.y]
-        if current_line.size > @cursor.x
-          current_char = current_line[@cursor.x]
-        else
-          current_char = "@"
-        end
-      else
-        current_char = "!"
-      end
-      # current_char = @buffer[@cursor.y][@cursor.x]
-      @status += "char:'#{current_char}' "
+      @status << "size:#{@buffer.join("\n").size}"
+      @status << "cur:{#{@cursor.x},#{@cursor.y}}"
 
       if @buffer.size > @cursor.y
         current_line_size = @buffer[@cursor.y].size
       end
-      @status += "b[y]#:#{current_line_size}"
+      @status << "b[y]#:#{current_line_size}"
     end
 
     def redraw
@@ -99,7 +87,7 @@ module Tote
 
       @window.write_string(
         Position.new(1, @window.height - 2),
-        "#{@status}")
+        "#{@status.join(" ")}")
 
       @cursor.limit(@buffer)
       @window.cursor(
